@@ -1,6 +1,6 @@
 var GHPATH = '/MP730026_tools/ble-multimeter-app';
 var APP_PREFIX = 'mp_ble_meter_';
-var VERSION = 'version_000';
+var VERSION = 'version_001';
 var URLS = [    
   `${GHPATH}/`,
   `${GHPATH}/index.html`

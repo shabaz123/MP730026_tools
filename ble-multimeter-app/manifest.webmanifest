@@ -1,6 +1,6 @@
 {
   "name": "BLE DMM",
-  "short_name": "mp_ble_meter",
+  "short_name": "BLE DMM",
   "description": "BLE Multimeter App",
   "scope": "/MP730026_tools/ble-multimeter-app/",
   "start_url": "/MP730026_tools/ble-multimeter-app/",
