@@ -27,6 +27,15 @@ Decoder based on Python code from baldengineer
             color: #ffffff;
         }
 
+        ::-webkit-scrollbar {
+            width: 15px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: orange;
+            border-radius: 15px;
+        }
+
         #units {
             border: 0;
             font-size: 1.25rem;
@@ -47,37 +56,60 @@ Decoder based on Python code from baldengineer
             color: #b0b0b0;
         }
 
+        #id_logtitle_check {
+            display: flex;
+            justify-content: center;
+        }
+
         #id_logtitle {
             border: 0;
             font-size: 100%;
             font: inherit;
-            vertical-align: baseline;
+
+            margin: 50px;
+            padding: 0;
+            color: #b0b0b0;
+            align-self: space-between;
+        }
+
+        #id_check {
+            border: 0;
+            font-size: 100%;
+            font: inherit;
+
             margin: 0;
             padding: 0;
             color: #b0b0b0;
         }
 
-        #id_meter1_value {
+        .jumbotron {
             position: relative;
             text-align: center;
             background-color: #313131;
-            width: 320px;
-            height: 150px;
+            width: 360px;
+            height: 120px;
             border: 1px solid #ffffff;
             border-radius: 0.5rem;
             display: inline-block;
+        }
+
+        #id_meter1_value {
+            background-color: #313131;
+            font-size: 360%;
         }
 
         #output {
             overflow: auto;
             font-size: 0.875rem;
             height: 200px;
+            width: 360px;
             text-align: left;
             background-color: #f0f0f0;
             border-radius: 0.75em;
             display: block;
-            margin: 0.5em;
+            margin: auto;
             padding: 0.5em;
+
 
         }
 
@@ -198,22 +230,41 @@ Decoder based on Python code from baldengineer
         </script>
 
 
-        <div id="id_topstatus" class="text-center my-3">MP730026 Digital Multimeter 1</div>
+        <div id="id_topstatus" class="text-center my-1">MP730026 Digital Multimeter 1</div>
         <div class="text-center">
             <div id="meterbox" class="jumbotron">
-                <h1 id="id_meter1_value" class="display-1 my-4">0</h1>
-                <p class="lead" id="units"> </p>
+                <h1 id="id_meter1_value" class="display-1 my-1">0</h1>
+                <p class="lead" id="units">-</p>
             </div>
         </div>
 
         <div class="m-4 text-center">
-            <button id="selDevice" class="btn btn-success mx-4">Select Multimeter</button>
-            <button id="reset" class="btn btn-success mx-4" disabled=true>Reset Bluetooth</button>
-            <button id="clr" class="btn btn-success mx-4">Clear Log</button>
+            <button id="selDevice" class="btn btn-success mx-2">Meter Sel</button>
+            <button id="reset" class="btn btn-success mx-2" disabled=true>BLE Reset</button>
+            <button id="clr" class="btn btn-success mx-2">Clear Log</button>
         </div>
 
         <div class="m-4 text-center">
-            <div id="id_logtitle" class="text-center my-3">Data Log</div>
+            <table id="id_logtitle_check">
+                <tr>
+                    <td>
+                        <div id="id_logtitle" class="text-center my-1 align-middle">Data Log</div>
+                    </td>
+                    <td>
+                        <div id="id_check" class="form-check align-middle">
+                            <input class="form-check-input align-middle" type="checkbox" value="" id="id_scrollcheck"
+                                checked>
+                            <label class="form-check-label align-middle" for="id_scrollcheck">
+                                Auto-scroll
+                            </label>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+
+
+
+
             <div id="output" class="output">
                 <div id="content"></div>
                 <div id="status"></div>
@@ -223,10 +274,8 @@ Decoder based on Python code from baldengineer
 
         <script>
             if (/Chrome\/(\d+\.\d+.\d+.\d+)/.test(navigator.userAgent)) {
-                // Let's log a warning if the sample is not supposed to execute on this
-                // version of Chrome.
                 if (45 > parseInt(RegExp.$1)) {
-                    ChromeSamples.setStatus('Warning! Keep in mind this sample has been tested with Chrome ' + 45 + '.');
+                    ChromeSamples.setStatus('Warning: Tested with Chrome ' + 45 + '.');
                 }
             }
         </script>
@@ -249,14 +298,17 @@ Decoder based on Python code from baldengineer
                 0x20f2, 0x60f2, 0x60f3, 0x20f1, 0x63f1];
 
             var dialdecode_arr = ["DCI,uA,4,6000 uA", "DCI,uA,3,600 uA", "DCI,uA,3", "DCI,mA,3,600 mA", "DCI,mA,2,60 mA", "DCI,A,2,20 A", "ACI,uA,4", "ACI,uA,3",
-                "ACI,mA,3,600 mA", "ACI,mA,2,60 mA", "ACI,A,2,20 A", "RES,ohm,3,600 ohm", "RES,ohm,2", "RES,ohm,1", "RES,kohm,3,600 kohm", "RES,kohm,2,60 kohm",
-                "RES,kohm,1,6 kohm", "RES,ohm,3", "RES,unk,3", "RES,Mohm,3", "RES,Mohm,2,60 Mohm", "RES,Mohm,1,6 Mohm", "RES,Mohm,0", "CONT,ohm,4",
+                "ACI,mA,3,600 mA", "ACI,mA,2,60 mA", "ACI,A,2,20 A", "RES,ohm,3,600 ohm", "RES,un1,2", "RES,un2,1", "RES,kohm,3,600 kohm", "RES,kohm,2,60 kohm",
+                "RES,kohm,1,6 kohm", "RES,over,3", "RES,un4,3", "RES,over,3", "RES,Mohm,2,60 Mohm", "RES,Mohm,1,6 Mohm", "RES,over,0", "CONT,over,4",
                 "CONT,ohm,3", "DCV,mV,3,600 mV", "DCV,mV,2,60 mV", "DCV,V,4,1000 V", "DCV,V,3,600 V", "DCV,V,2,60 V", "DCV,V,1,6 V", "ACV,V,4,750 V",
                 "ACV,mV,3,600 mV", "ACV,mV,2,60 mV", "ACV,V,3,600 V", "ACV,V,2,60 V", "ACV,V,1,6 V", "DIODE,V,0", "DIODE,V,1", "DIODE,V,0",
                 "FREQ,Hz,3,999.9 Hz", "FREQ,Hz,2,99.99 Hz", "FREQ,Hz,1,9.999 Hz", "FREQ,kHz,3,999.9 kHz", "FREQ,kHz,2,99.99 kHz", "FREQ,kHz,1,9.999 kHz", "FREQ,MHz,3", "FREQ,MHz,2",
                 "FREQ,MHz,1,9.999 MHz", "FREQ,pct,3,99.9 %", "CAP,nF,3,600 nF", "CAP,nF,2,60 nF", "CAP,nF,1,6 nF", "CAP,uF,3,600 uF", "CAP,uF,2,60 uF", "CAP,uF,1,6 uF",
                 "TEMP,degC,4,400 C", "TEMP,degF,4,750 F", "NCV,sp,4", "UNK1,U,1", "UNK2,U,1"];
             var dial = {};
+
+            var scroll_check = document.getElementById("id_scrollcheck");
+
             for (var i = 0; i < dialcode_arr.length; i++) {
                 dial[dialcode_arr[i]] = dialdecode_arr[i];
             }
@@ -315,22 +367,36 @@ Decoder based on Python code from baldengineer
                     clearTimeout(nodataTimer);
                     nodataTimer = null;
                 }
+                const dateobj = new Date(); // get timestamp
+                do_overload = 0;
                 value = event.target.value;
                 vlen = value.byteLength;
-                // log('Notify raw data: '+ value + ' length ' + vlen);
                 dialcode = (value.getUint8(0) * 256) + value.getUint8(1);
-                log('dialcode is ' + dialcode);
-                dialdecode = dial[dialcode]; // dialcode contains a string like "DCV,mV,1"
-                if (dialdecode.search(",") == -1) { // catch any unexpected notifications
+                // log('dialcode is ' + dialcode);
+                dialdecode = dial[dialcode]; // dialcode contains a string like "DCV,mV,2,60 mV"
+                try {
+                    if (dialdecode.search(",") == -1) { // catch any unexpected notifications
+                        return;
+                    }
+                } catch(err) {
                     return;
                 }
                 temp_str = dialdecode.split(",");
-                meas_type = temp_str[0];
-                meas_unit = temp_str[1];
-                meas_dp_pos = temp_str[2];
-                meas_maxval = temp_str[3];
+                meas_type = temp_str[0]; // e.g. DVC
+                meas_unit = temp_str[1]; // e.g. mV
+                meas_dp_pos = temp_str[2]; // decimal place from left. For example, 3 would mean xxx.x
+                meas_maxval = temp_str[3]; // max value string, for example '600 mV'
                 if ((typeof meas_maxval) == 'undefined') {
                     meas_maxval = "";
+                }
+                //handle out of range for resistances:
+                if (meas_unit.search("over") > -1) {
+                    do_overload = 1;
+                    meas_unit = "";
+                }
+                // handle unknown measurement types that occasionally seem to appear when the dial is rotated:
+                if (meas_type.search("UNK") > -1) {
+                    return;
                 }
                 msbyte = value.getUint8(5);
                 lsbyte = value.getUint8(4);
@@ -342,8 +408,11 @@ Decoder based on Python code from baldengineer
                     rawmeas = rawmeas & 0x7fff;
                 }
                 // convert the measurement result into a string
-                if ((intmeas > 32676) || (intmeas < -32676)) { // overload
-                    msg_str = "O.L";
+                //if ((intmeas > 32676) || (intmeas < -32676)) { 
+                //    log('intmeas is ' + intmeas + ' rawmeas is ' + rawmeas );
+                //}
+                if (do_overload > 0) { // overload
+                    meas_str = "Overload";
                 } else { // not overloaded
                     temp_str = rawmeas.toString();
                     temp_str = temp_str.padStart(4, '0');
@@ -354,7 +423,16 @@ Decoder based on Python code from baldengineer
                         }
                     }
                 }
-                log('dial ' + dialcode.toString(16) + ": " + dialdecode + ', meas: ' + meas_str + ' ' + meas_unit);
+                //log('dial ' + dialcode.toString(16) + ": " + dialdecode + ', meas: ' + meas_str + ' ' + meas_unit);
+                // log the output:
+                hr = ('00' + dateobj.getHours()).slice(-2);
+                min = ('00' + dateobj.getMinutes()).slice(-2);
+                sec = ('00' + dateobj.getSeconds()).slice(-2);
+                log(hr + ":" + min + ":" + sec + ",  " + meas_type + " [" + meas_maxval + "],  " + meas_str + " " + meas_unit);
+                if (scroll_check.checked == true) { // do auto-scroll
+                    var logDiv = document.getElementById("output");
+                    logDiv.scrollTop = logDiv.scrollHeight;
+                }
                 id_meter1_value.textContent = meas_str + " " + meas_unit;
                 units.textContent = meas_type + " " + meas_maxval;
                 nodataTimer = setTimeout(nodata_callback, 1000);
